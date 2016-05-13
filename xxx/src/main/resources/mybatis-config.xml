@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+	PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<!-- 타입에 대한 별칭 설정 -->		
+		<typeAlias alias="board" type="com.kgs7276.board.domain.BoardVO"/>
+		<!-- 타입에 대한 패키지 생략 설정 -->
+		<package name="com.kgs7276.board.domain"/>
+		<package name="com.kgs7276.board.aop"/>
+	</typeAliases>	
+</configuration>

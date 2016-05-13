@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kgs7276.board.mapper.ReplyMapper">
+
+	<!-- 댓글 등록 -->
+	<insert id="create">
+		insert into tbl_reply(bno, replytext, replyer)
+		values(#{bno}, #{replytext}, #{replyer})
+	</insert>
+	
+	<!-- 댓글 리스트(Integer bno 본글의 글번호) -->
+	<!-- <select id="list" resultType="ReplyVO">
+		select *
+		from tbl_reply
+		where bno = #{bno}
+		order by rno desc
+	</select> -->
+	
+	<!-- 댓글 리스트(Integer bno 본글의 글번호), Criteria 사용 -->
+	<select id="list" resultType="ReplyVO">
+		select *
+		from tbl_reply
+		where bno = #{bno}
+		order by rno desc
+		limit #{criteria.pageStart}, #{criteria.perPageNum}
+	</select>
+	
+	<!-- 댓글 개수 조회(Integer bno 본글의 글번호) -->
+	<select id="listCount" resultType="int">
+		select count(rno)
+		from tbl_reply
+		where bno = #{bno}
+	</select>
+	
+	<!-- 댓글 수정 -->
+	<update id="update">
+		update tbl_reply
+		set replytext = #{replytext}, updatedate = now()
+		where rno = #{rno}
+	</update>
+	
+	<!-- 댓글 삭제 -->
+	<delete id="delete">
+		delete from tbl_reply
+		where rno = #{rno}
+	</delete>	
+	
+	<!-- 댓글 삭제 시 본글 번호 조회 -->
+	<select id="getBno" resultType="int">
+		select bno from tbl_reply where rno = #{rno}
+	</select>
+
+</mapper>

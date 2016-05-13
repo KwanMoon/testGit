@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kgs7276.board.mapper.MessageMapper">
+
+	<!-- 메시지 생성 -->
+	<insert id="create">
+		insert into tbl_message (targetid, sender, message)
+		values (#{targetid}, #{sender}, #{message})
+	</insert>
+	
+	
+	<!-- 메세지 읽기 -->
+	<select id="read" resultType="MessageVO">
+		select *
+		from tbl_message
+		where mid = #{mid}
+	</select>
+	
+	<!-- 메시지 읽은 날짜 수정 -->
+	<update id="updateState">
+		update tbl_message
+		set opendate = now()
+		where mid = #{mid}
+	</update>
+
+</mapper>

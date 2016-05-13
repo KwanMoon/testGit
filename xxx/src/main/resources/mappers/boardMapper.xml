@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kgs7276.board.mapper.BoardMapper">
+
+	<!-- 게시글 등록 -->
+	<insert id="create">
+		insert into tbl_board (title, content, writer)
+		values(#{title}, #{content}, #{writer})
+	</insert>
+
+	<!-- 동적 SQL을 위한 부분 SQL -->
+	<sql id="search">
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				and title like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'c'.toString()">
+				and content like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'w'.toString()">
+				and writer like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'tc'.toString()">
+				and ( title like CONCAT('%', #{keyword}, '%') OR content like
+				CONCAT('%', #{keyword}, '%'))
+			</if>
+			<if test="searchType == 'cw'.toString()">
+				and ( content like CONCAT('%', #{keyword}, '%') OR writer like
+				CONCAT('%', #{keyword}, '%'))
+			</if>
+			<if test="searchType == 'tcw'.toString()">
+				and ( title like CONCAT('%', #{keyword}, '%')
+				OR
+				content like CONCAT('%', #{keyword}, '%')
+				OR
+				writer like CONCAT('%', #{keyword}, '%'))
+			</if>
+		</if>	
+	</sql>
+	
+	<!-- 게시물 목록 (페이징 적용 유, SearchCriteria 객체 사용) -->
+	<select id="list" resultType="BoardVO">
+		<![CDATA[
+		select bno, title, content, writer, regdate, viewcnt, replycnt 
+		from tbl_board
+		where bno > 0
+		]]>
+		
+		<include refid="search"></include>	
+		
+		<![CDATA[		
+		order by bno desc, regdate desc
+		limit #{pageStart} , #{perPageNum}
+		]]>
+	</select>
+
+	<!-- 검색 게시물 개수 -->
+	<select id="listCount" resultType="int">
+		<![CDATA[
+		select count(bno)
+		from tbl_board
+		where bno > 0
+		]]>
+		
+		<include refid="search"></include>
+	</select>
+
+	<!-- 게시글 조회 -->
+	<select id="read" resultType="board">
+		select bno, title, content, writer, replycnt, regdate, viewcnt
+		from tbl_board
+		where bno = #{bno}
+	</select>
+
+	<!-- 게시글 수정 -->
+	<update id="update">
+		update tbl_board set title = #{title}, content =
+		#{content}, writer = #{writer}
+		where bno = #{bno}
+	</update>
+
+	<!-- 게시글 삭제 -->
+	<delete id="delete">
+		delete from tbl_board where bno = #{bno}
+	</delete>
+	
+	<!-- 댓글 숫자 갱신(+1 또는 -1) -->
+	<update id="updateReplyCnt">
+		update tbl_board
+		set replycnt = replycnt + #{amount}
+		where bno = #{bno}
+	</update>
+	
+	<!-- 본글 조회수 갱신(게시글 조회마다 viewcnt 컬럼의 값을 +1씩 증가) -->
+	<update id="updateViewCnt">
+		update tbl_board
+		set viewcnt = viewcnt + 1
+		where bno = #{bno}
+	</update>
+	
+	<!-- 첨부파일 등록 -->
+	<insert id="addAttach">
+		insert into tbl_attach(fullName, bno)
+		values(#{fullName}, LAST_INSERT_ID())
+	</insert>
+
+	<!-- 첨부파일 목록 조회 -->
+	<select id="getAttach" resultType="String">
+		select fullName from tbl_attach where bno = #{bno} order by regdate
+	</select>
+	
+	
+</mapper>
